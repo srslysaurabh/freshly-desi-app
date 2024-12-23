@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freshly Desi</title>
+    <p>Fresh • Local • Delicious</p>
+    <div class="header-info">
+        <div class="date">Date: <span id="current-date"></span></div>
+        <div class="total-completed">Total Sales: ₹<span id="completed-total">0</span></div>
+    </div>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+   
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, sans-serif;
+                }
+          
+
+        body {
+            background: #fff;
+            color: #000;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            padding: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .orders-section {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 15px;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                max-height: 40vh;
+                overflow-y: auto;
+            }
+            .menu-section {
+                margin-bottom: 45vh;
+            }
+        }
+
+        header {
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #000;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+        }
+
+        .item-price {
+            font-weight: bold;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .orders-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+
+        .pending-order {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-complete-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .total-section {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #000;
+            font-weight: bold;
+        }
+
+        .submit-order {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .quantity {
+            width: 30px;
+            text-align: center;
+            border: none;
+            font-weight: bold;
+        }
+        .header-info {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding: 10px;
+        background: rgba(0,0,0,0.1);
+        border-radius: 5px;
+        font-size: 1.1em;
+    }
+    
+    .date, .total-completed {
+        color: #FFD700;
+        font-weight: bold;
+    }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #fff;
+            padding: 10px 20px;
+            display: none;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
+        .fullscreen-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        header {
+            background: #C41E3A; /* KFC red */
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            color: #FFD700; /* Golden color */
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-family: system-ui, sans-serif;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Freshly Desi</h1>
+        <p>Fresh • Local • Delicious</p>
+    </header>
+    <button class="fullscreen-btn" onclick="toggleFullScreen()">Toggle Full Screen</button>
+    <div class="container">
+        <div class="menu-section">
+            <div class="category">
+                <h2 class="category-title">Quick Bites</h2>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Veg Spring Rolls</div>
+                        <div class="item-price">₹95</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Cheese Garlic Bread</div>
+                        <div class="item-price">₹105</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Korean Veg Baos</div>
+                        <div class="item-price">₹95</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2 class="category-title">Pizzas</h2>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Queen Margherita</div>
+                        <div class="item-price">₹259</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Corn and Cheese</div>
+                        <div class="item-price">₹279</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Veg Xtravaganza</div>
+                        <div class="item-price">₹289</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Paneer & Jalapeno</div>
+                        <div class="item-price">₹299</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Paneer Delight</div>
+                        <div class="item-price">₹309</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Basil Pesto Farmhouse</div>
+                        <div class="item-price">₹319</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Basil Pesto Paneer</div>
+                        <div class="item-price">₹339</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2 class="category-title">Coffee & Tea</h2>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Capuccino/ Standard Coffee</div>
+                        <div class="item-price">₹35</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Latte/ Standard Coffee</div>
+                        <div class="item-price">₹35</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Americano / Black Coffee</div>
+                        <div class="item-price">₹35</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Flavoured Coffee - Hazelnut</div>
+                        <div class="item-price">₹65</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Flavoured Coffee - Mocha</div>
+                        <div class="item-price">₹65</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Flavoured Coffee - Irish Creme</div>
+                        <div class="item-price">₹65</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Ginger /  Elaichi / Masala Tea</div>
+                        <div class="item-price">₹25</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2 class="category-title">Hot Beverages</h2>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Hot Chocolate</div>
+                        <div class="item-price">₹95</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Badaam Milk</div>
+                        <div class="item-price">₹95</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Ragi Milk</div>
+                        <div class="item-price">₹5</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2 class="category-title">Cold Beverages</h2>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Ice Tea</div>
+                        <div class="item-price">₹65</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Cold Coffee</div>
+                        <div class="item-price">₹75</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-details">
+                        <div class="item-name">Ice Americano</div>
+                        <div class="item-price">₹70</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity" value="0" min="0" readonly>
+                        <button class="qty-btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="orders-section">
+            <h2 class="orders-title">Pending Orders</h2>
+            <div class="pending-orders-list"></div>
+            <div class="total-section">
+                Total: ₹<span id="cart-total">0</span>
+            </div>
+            <button class="submit-order" onclick="submitOrder()">Place Order</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast-message"></div>
+
+<script>
+    let orderCounter = 1;
+    let currentOrder = {};
+    
+    function updateQuantity(button, change) {
+        const quantityInput = button.parentElement.querySelector('.quantity');
+        const newValue = Math.max(0, parseInt(quantityInput.value) + change);
+        quantityInput.value = newValue;
+        
+        const menuItem = button.closest('.menu-item');
+        const itemName = menuItem.querySelector('.item-name').textContent;
+        const itemPrice = parseInt(menuItem.querySelector('.item-price').textContent.replace('₹', ''));
+        
+        console.log(`Item: ${itemName}, New Quantity: ${newValue}, Price: ${itemPrice}`);
+        
+        if (newValue > 0) {
+            currentOrder[itemName] = {
+                quantity: newValue,
+                price: itemPrice
+            };
+        } else {
+            delete currentOrder[itemName];
+        }
+        
+        updateTotal();
+    }
+    
+    function updateTotal() {
+        const total = Object.values(currentOrder).reduce((sum, item) => {
+            return sum + (item.quantity * item.price);
+        }, 0);
+        document.getElementById('cart-total').textContent = total;
+        
+        console.log(`Current Order:`, currentOrder);
+        console.log(`Total: ${total}`);
+    }
+
+    function submitOrder() {
+        const pendingOrdersList = document.querySelector('.pending-orders-list');
+        const orderId = `order-${orderCounter++}`;
+        const orderItems = Object.entries(currentOrder).map(([name, details]) => {
+            return `<div>${name} x ${details.quantity} - ₹${details.price * details.quantity}</div>`;
+        }).join('');
+        
+        const orderElement = document.createElement('div');
+        orderElement.classList.add('pending-order');
+        orderElement.id = orderId;
+        orderElement.innerHTML = `
+            <div>
+                <strong>Order ${orderCounter}</strong>
+                ${orderItems}
+            </div>
+            <button class="order-complete-btn" onclick="completeOrder('${orderId}')">Complete</button>
+        `;
+        
+        pendingOrdersList.appendChild(orderElement);
+        
+        // Reset current order
+        currentOrder = {};
+        updateTotal();
+        
+        // Reset quantities in the menu
+        document.querySelectorAll('.quantity').forEach(input => input.value = 0);
+        
+        showToast('Order placed successfully!');
+    }
+
+    function completeOrder(orderId) {
+        const orderElement = document.getElementById(orderId);
+        orderElement.remove();
+        showToast('Order completed!');
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast-message');
+        toast.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+    function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        let completedTotal = 0;
+    
+    // Add this function to set current date
+    function setCurrentDate() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('en-IN', options);
+    }
+    
+    // Update completeOrder function
+    function completeOrder(orderId) {
+        const orderElement = document.getElementById(orderId);
+        // Extract order total from the order element
+        const orderText = orderElement.innerHTML;
+        const amounts = orderText.match(/₹(\d+)/g);
+        if (amounts) {
+            const orderTotal = amounts.reduce((sum, amount) => {
+                return sum + parseInt(amount.replace('₹', ''));
+            }, 0);
+            completedTotal += orderTotal;
+            document.getElementById('completed-total').textContent = completedTotal;
+        }
+        orderElement.remove();
+        showToast('Order completed!');
+    }
+    
+    // Call setCurrentDate when page loads
+    document.addEventListener('DOMContentLoaded', setCurrentDate);
+</script>
+</body>
