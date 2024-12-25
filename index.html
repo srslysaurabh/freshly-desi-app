@@ -1,329 +1,679 @@
-import React, { useState, useEffect } from 'react';
-import { X, Check, ChevronsUpDown, DollarSign } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freshly Desi POS</title>
+    <!-- Include Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
 
-const CafePos = () => {
-  const [cart, setCart] = useState({});
-  const [orders, setOrders] = useState([]);
-  const [completedOrders, setCompletedOrders] = useState([]);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [currentOrderId, setCurrentOrderId] = useState(1);
-  const [dailyTotal, setDailyTotal] = useState(0);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentReceived, setPaymentReceived] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('Quick Bites');
+        .min-h-screen {
+            min-height: 100vh;
+            background-color: rgb(243 244 246);
+        }
 
-  const menuCategories = {
-    'Quick Bites': [
-      { name: 'Veg Spring Rolls', price: 95 },
-      { name: 'Cheese Garlic Bread', price: 105 },
-      { name: 'Korean Veg Baos', price: 95 },
-    ],
-    'Pizzas': [
-      { name: 'Queen Margherita', price: 259 },
-      { name: 'Corn and Cheese', price: 279 },
-      { name: 'Veg Xtravaganza', price: 289 },
-      { name: 'Paneer & Jalapeno', price: 299 },
-      { name: 'Paneer Delight', price: 309 },
-      { name: 'Basil Pesto Farmhouse', price: 319 },
-      { name: 'Basil Pesto Paneer', price: 339 },
-    ],
-    'Coffee & Tea': [
-      { name: 'Capuccino', price: 35 },
-      { name: 'Latte', price: 35 },
-      { name: 'Americano', price: 35 },
-      { name: 'Flavoured Coffee - Hazelnut', price: 65 },
-      { name: 'Flavoured Coffee - Mocha', price: 65 },
-      { name: 'Flavoured Coffee - Irish Creme', price: 65 },
-      { name: 'Masala Tea', price: 25 },
-    ],
-    'Hot Beverages': [
-      { name: 'Hot Chocolate', price: 95 },
-      { name: 'Badaam Milk', price: 95 },
-      { name: 'Ragi Milk', price: 95 },
-    ],
-    'Cold Beverages': [
-      { name: 'Ice Tea', price: 65 },
-      { name: 'Cold Coffee', price: 75 },
-      { name: 'Ice Americano', price: 70 },
-    ],
-    'Desserts': [
-      { name: 'Brownie', price: 105 },
-      { name: 'Chocolava', price: 119 },
-      { name: 'Cake Slice', price: 65 },
-      { name: 'Croissant', price: 75 },
-    ],
-  };
+        .header {
+            background-color: rgb(185 28 28);
+            color: white;
+            padding: 1rem;
+        }
 
-  const calculateTotal = (items) => {
-    return Object.entries(items).reduce((total, [_, item]) => {
-      return total + (item.quantity * item.price);
-    }, 0);
-  };
+        .header h1 {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: rgb(250 204 21);
+        }
 
-  const updateCart = (item, change) => {
-    setCart(prev => {
-      const newCart = { ...prev };
-      if (!newCart[item.name]) {
-        newCart[item.name] = { ...item, quantity: 0 };
-      }
-      newCart[item.name].quantity = Math.max(0, newCart[item.name].quantity + change);
-      if (newCart[item.name].quantity === 0) {
-        delete newCart[item.name];
-      }
-      return newCart;
-    });
-  };
+        .header p {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
 
-  const handlePlaceOrder = () => {
-    if (Object.keys(cart).length === 0) return;
-    setShowConfirm(true);
-  };
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            background-color: rgb(153 27 27);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+        }
 
-  const confirmOrder = () => {
-    const newOrder = {
-      id: currentOrderId,
-      items: { ...cart },
-      total: calculateTotal(cart),
-      timestamp: new Date(),
-      status: 'pending',
-      paid: false
-    };
-    setOrders(prev => [...prev, newOrder]);
-    setCurrentOrderId(prev => prev + 1);
-    setCart({});
-    setShowConfirm(false);
-    setShowPaymentModal(true);
-  };
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
 
-  const handlePayment = (orderId) => {
-    setOrders(prev => prev.map(order => {
-      if (order.id === orderId) {
-        return { ...order, paid: true };
-      }
-      return order;
-    }));
-    setShowPaymentModal(false);
-  };
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
 
-  const completeOrder = (orderId) => {
-    const order = orders.find(o => o.id === orderId);
-    if (order && order.paid) {
-      setOrders(prev => prev.filter(o => o.id !== orderId));
-      setCompletedOrders(prev => [...prev, { ...order, status: 'completed' }]);
-      setDailyTotal(prev => prev + order.total);
-    }
-  };
+        @media (min-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-red-700 text-white p-4">
-        <div className="container mx-auto">
-          <h1 className="text-4xl font-bold text-yellow-400">Freshly Desi</h1>
-          <p className="text-sm mt-2">Fresh • Local • Delicious</p>
-          <div className="flex justify-between mt-4 bg-red-800 p-2 rounded">
-            <div>Date: {new Date().toLocaleDateString()}</div>
-            <div>Daily Total: ₹{dailyTotal}</div>
-          </div>
-        </div>
-      </header>
+        .menu-section {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
 
-      {/* Main Content */}
-      <div className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Menu Section */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow">
-          {/* Category Tabs */}
-          <div className="flex overflow-x-auto p-2 bg-gray-50 rounded-t-lg">
-            {Object.keys(menuCategories).map(category => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-4 py-2 whitespace-nowrap rounded ${
-                  activeCategory === category 
-                  ? 'bg-red-700 text-white' 
-                  : 'hover:bg-gray-200'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+        .category-tabs {
+            display: flex;
+            overflow-x: auto;
+            padding: 0.5rem;
+            background-color: rgb(249 250 251);
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
 
-          {/* Menu Items */}
-          <div className="p-4 grid gap-2">
-            {menuCategories[activeCategory].map(item => (
-              <div key={item.name} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
-                <div>
-                  <div className="font-medium">{item.name}</div>
-                  <div className="text-sm text-gray-600">₹{item.price}</div>
+        .category-tab {
+            padding: 0.5rem 1rem;
+            white-space: nowrap;
+            border-radius: 0.25rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .category-tab.active {
+            background-color: rgb(185 28 28);
+            color: white;
+        }
+
+        .category-tab:hover:not(.active) {
+            background-color: rgb(229 231 235);
+        }
+
+        .menu-items {
+            padding: 1rem;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .menu-item:hover {
+            background-color: rgb(249 250 251);
+        }
+
+        .item-price {
+            font-size: 0.875rem;
+            color: rgb(75 85 99);
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .quantity-btn.minus {
+            background-color: rgb(254 226 226);
+            color: rgb(185 28 28);
+        }
+
+        .quantity-btn.plus {
+            background-color: rgb(185 28 28);
+            color: white;
+        }
+
+        .quantity-display {
+            width: 2rem;
+            text-align: center;
+        }
+
+        .orders-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .order-card {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+        }
+
+        .cart-total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgb(229 231 235);
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background-color: rgb(185 28 28);
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .place-order-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pending-order {
+            border-bottom: 1px solid rgb(229 231 235);
+            padding: 0.5rem 0;
+        }
+
+        .pending-order:last-child {
+            border-bottom: none;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.25rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-btn {
+            background-color: rgb(220 252 231);
+            color: rgb(22 163 74);
+        }
+
+        .complete-btn {
+            background-color: rgb(219 234 254);
+            color: rgb(29 78 216);
+        }
+
+        .order-details {
+            font-size: 0.875rem;
+            color: rgb(75 85 99);
+            margin-top: 0.25rem;
+        }
+
+        .payment-status {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .status-paid {
+            color: rgb(22 163 74);
+        }
+
+        .status-pending {
+            color: rgb(185 28 28);
+        }
+
+        .completed-order {
+            font-size: 0.875rem;
+            color: rgb(75 85 99);
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            max-width: 28rem;
+            width: 100%;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background-color: rgb(229 231 235);
+        }
+
+        .btn-confirm {
+            background-color: rgb(185 28 28);
+            color: white;
+        }
+
+        .btn-payment-received {
+            background-color: rgb(22 163 74);
+            color: white;
+        }
+
+        .btn-payment-pending {
+            background-color: rgb(202 138 4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen">
+        <header class="header">
+            <div class="container">
+                <h1>Freshly Desi</h1>
+                <p>Fresh • Local • Delicious</p>
+                <div class="header-info">
+                    <div id="current-date"></div>
+                    <div>Daily Total: ₹<span id="daily-total">0</span></div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => updateCart(item, -1)}
-                    className="w-8 h-8 flex items-center justify-center bg-red-100 text-red-700 rounded"
-                  >
-                    -
-                  </button>
-                  <span className="w-8 text-center">
-                    {cart[item.name]?.quantity || 0}
-                  </span>
-                  <button
-                    onClick={() => updateCart(item, 1)}
-                    className="w-8 h-8 flex items-center justify-center bg-red-700 text-white rounded"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Orders Section */}
-        <div className="space-y-4">
-          {/* Current Cart */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-lg font-bold mb-4">Current Order</h2>
-            {Object.entries(cart).map(([name, item]) => (
-              <div key={name} className="flex justify-between py-1">
-                <span>{name} x{item.quantity}</span>
-                <span>₹{item.price * item.quantity}</span>
-              </div>
-            ))}
-            <div className="mt-4 pt-4 border-t">
-              <div className="flex justify-between font-bold">
-                <span>Total</span>
-                <span>₹{calculateTotal(cart)}</span>
-              </div>
-              <button
-                onClick={handlePlaceOrder}
-                disabled={Object.keys(cart).length === 0}
-                className="w-full mt-4 bg-red-700 text-white py-2 rounded disabled:opacity-50"
-              >
-                Place Order
-              </button>
             </div>
-          </div>
+        </header>
 
-          {/* Pending Orders */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-lg font-bold mb-4">Pending Orders</h2>
-            {orders.map(order => (
-              <div key={order.id} className="border-b last:border-0 py-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Order #{order.id}</span>
-                  <div className="flex gap-2">
-                    {!order.paid && (
-                      <button
-                        onClick={() => handlePayment(order.id)}
-                        className="p-1 bg-green-100 text-green-700 rounded"
-                      >
-                        <DollarSign size={16} />
-                      </button>
-                    )}
-                    {order.paid && (
-                      <button
-                        onClick={() => completeOrder(order.id)}
-                        className="p-1 bg-blue-100 text-blue-700 rounded"
-                      >
-                        <Check size={16} />
-                      </button>
-                    )}
-                  </div>
+        <div class="container">
+            <div class="grid-layout">
+                <div class="menu-section">
+                    <div class="category-tabs" id="category-tabs"></div>
+                    <div class="menu-items" id="menu-items"></div>
                 </div>
-                <div className="text-sm text-gray-600 mt-1">
-                  {Object.entries(order.items).map(([name, item]) => (
-                    <div key={name}>{name} x{item.quantity}</div>
-                  ))}
-                  <div className="mt-1">Total: ₹{order.total}</div>
-                  <div className="text-xs mt-1">
-                    {order.paid ? 
-                      <span className="text-green-600">Payment Received</span> : 
-                      <span className="text-red-600">Payment Pending</span>
-                    }
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
 
-          {/* Completed Orders */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-lg font-bold mb-4">Completed Orders</h2>
-            <div className="space-y-2">
-              {completedOrders.map(order => (
-                <div key={order.id} className="text-sm text-gray-600">
-                  Order #{order.id} - ₹{order.total}
+                <div class="orders-section">
+                    <div class="order-card">
+                        <h2 class="card-title">Current Order</h2>
+                        <div id="current-cart"></div>
+                        <div class="cart-total">
+                            <span>Total</span>
+                            <span>₹<span id="cart-total">0</span></span>
+                        </div>
+                        <button class="place-order-btn" id="place-order-btn" disabled>
+                            Place Order
+                        </button>
+                    </div>
+
+                    <div class="order-card">
+                        <h2 class="card-title">Pending Orders</h2>
+                        <div id="pending-orders"></div>
+                    </div>
+
+                    <div class="order-card">
+                        <h2 class="card-title">Completed Orders</h2>
+                        <div id="completed-orders"></div>
+                    </div>
                 </div>
-              ))}
             </div>
-          </div>
         </div>
-      </div>
 
-      {/* Confirmation Modal */}
-      {showConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-bold mb-4">Confirm Order</h3>
-            <div className="space-y-2">
-              {Object.entries(cart).map(([name, item]) => (
-                <div key={name} className="flex justify-between">
-                  <span>{name} x{item.quantity}</span>
-                  <span>₹{item.price * item.quantity}</span>
+        <!-- Confirmation Modal -->
+        <div id="confirm-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3 class="modal-title">Confirm Order</h3>
+                <div id="confirm-order-details"></div>
+                <div class="modal-actions">
+                    <button class="modal-btn btn-cancel" id="cancel-order">Cancel</button>
+                    <button class="modal-btn btn-confirm" id="confirm-order">Confirm</button>
                 </div>
-              ))}
-              <div className="pt-2 border-t mt-2">
-                <div className="flex justify-between font-bold">
-                  <span>Total</span>
-                  <span>₹{calculateTotal(cart)}</span>
-                </div>
-              </div>
             </div>
-            <div className="flex gap-2 mt-6">
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="flex-1 bg-gray-200 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmOrder}
-                className="flex-1 bg-red-700 text-white py-2 rounded"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
         </div>
-      )}
 
-      {/* Payment Modal */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-bold mb-4">Payment Status</h3>
-            <p className="mb-4">Total Amount: ₹{calculateTotal(cart)}</p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handlePayment(currentOrderId - 1)}
-                className="flex-1 bg-green-600 text-white py-2 rounded"
-              >
-                Payment Received
-              </button>
-              <button
-                onClick={() => setShowPaymentModal(false)}
-                className="flex-1 bg-yellow-600 text-white py-2 rounded"
-              >
-                Payment Pending
-              </button>
+        <!-- Payment Modal -->
+        <div id="payment-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3 class="modal-title">Payment Status</h3>
+                <p>Total Amount: ₹<span id="payment-amount">0</span></p>
+                <div class="modal-actions">
+                    <button class="modal-btn btn-payment-received" id="payment-received">
+                        Payment Received
+                    </button>
+                    <button class="modal-btn btn-payment-pending" id="payment-pending">
+                        Payment Pending
+                    </button>
+                </div>
             </div>
-          </div>
         </div>
-      )}
     </div>
-  );
-};
 
-export default CafePos;
+    <script>
+        // Menu categories data
+        const menuCategories = {
+            'Quick Bites': [
+                { name: 'Veg Spring Rolls', price: 95 },
+                { name: 'Cheese Garlic Bread', price: 105 },
+                { name: 'Korean Veg Baos', price: 95 },
+            ],
+            'Pizzas': [
+                { name: 'Queen Margherita', price: 259 },
+                { name: 'Corn and Cheese', price: 279 },
+                { name: 'Veg Xtravaganza', price: 289 },
+                { name: 'Paneer & Jalapeno', price: 299 },
+                { name: 'Paneer Delight', price: 309 },
+                { name: 'Basil Pesto Farmhouse', price: 319 },
+                { name: 'Basil Pesto Paneer', price: 339 },
+            ],
+            'Coffee & Tea': [
+                { name: 'Capuccino', price: 35 },
+                { name: 'Latte', price: 35 },
+                { name: 'Americano', price: 35 },
+                { name: 'Flavoured Coffee - Hazelnut', price: 65 },
+                { name: 'Flavoured Coffee - Mocha', price: 65 },
+                { name: 'Flavoured Coffee - Irish Creme', price: 65 },
+                { name: 'Masala Tea', price: 25 },
+            ],
+            'Hot Beverages': [
+                { name: 'Hot Chocolate', price: 95 },
+                { name: 'Badaam Milk', price: 95 },
+                { name: 'Ragi Milk', price: 95 },
+            ],
+            'Cold Beverages': [
+                { name: 'Ice Tea', price: 65 },
+                { name: 'Cold Coffee', price: 75 },
+                { name: 'Ice Americano', price: 70 },
+            ],
+            'Desserts': [
+                { name: 'Brownie', price: 105 },
+                { name: 'Chocolava', price: 119 },
+                { name: 'Cake Slice', price: 65 },
+                { name: 'Croissant', price: 75 },
+            ],
+        };
+
+        // State management
+        let currentOrderId = 1;
+        let activeCategory = 'Quick Bites';
+        let cart = {};
+        let orders = [];
+        let completedOrders = [];
+        let dailyTotal = 0;
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Helper functions
+        function calculateTotal(items) {
+            return Object.values(items).reduce((total, item) => {
+                return total + (item.quantity * item.price);
+            }, 0);
+        }
+
+        function updateQuantity(item, change) {
+            const newCart = { ...cart };
+            if (!newCart[item.name]) {
+                newCart[item.name] = { ...item, quantity: 0 };
+            }
+            newCart[item.name].quantity = Math.max(0, newCart[item.name].quantity + change);
+            if (newCart[item.name].quantity === 0) {
+                delete newCart[item.name];
+            }
+            cart = newCart;
+            updateUI();
+        }
+
+        function updateUI() {
+            // Update cart display
+            const cartContainer = document.getElementById('current-cart');
+            cartContainer.innerHTML = Object.entries(cart)
+                .map(([name, item]) => `
+                    <div class="cart-item">
+                        <span>${name} x${item.quantity}</span>
+                        <span>₹${item.price * item.quantity}</span>
+                    </div>
+                `).join('');
+
+            // Update cart total
+            const total = calculateTotal(cart);
+            document.getElementById('cart-total').textContent = total;
+
+            // Update place order button state
+            document.getElementById('place-order-btn').disabled = Object.keys(cart).length === 0;
+
+            // Update menu item quantities
+            document.querySelectorAll('.menu-item').forEach(menuItem => {
+                const itemName = menuItem.querySelector('.item-name').textContent;
+                const quantityDisplay = menuItem.querySelector('.quantity-display');
+                quantityDisplay.textContent = cart[itemName]?.quantity || 0;
+            });
+        }
+
+        function showConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            const detailsContainer = document.getElementById('confirm-order-details');
+            
+            detailsContainer.innerHTML = `
+                <div class="space-y-2">
+                    ${Object.entries(cart).map(([name, item]) => `
+                        <div class="flex justify-between">
+                            <span>${name} x${item.quantity}</span>
+                            <span>₹${item.price * item.quantity}</span>
+                        </div>
+                    `).join('')}
+                    <div class="pt-2 border-t mt-2">
+                        <div class="flex justify-between font-bold">
+                            <span>Total</span>
+                            <span>₹${calculateTotal(cart)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        function hideConfirmModal() {
+            document.getElementById('confirm-modal').style.display = 'none';
+        }
+
+        function showPaymentModal() {
+            const modal = document.getElementById('payment-modal');
+            document.getElementById('payment-amount').textContent = calculateTotal(cart);
+            modal.style.display = 'flex';
+        }
+
+        function hidePaymentModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+        }
+
+        function confirmOrder() {
+            const newOrder = {
+                id: currentOrderId,
+                items: { ...cart },
+                total: calculateTotal(cart),
+                timestamp: new Date(),
+                status: 'pending',
+                paid: false
+            };
+            
+            orders.push(newOrder);
+            currentOrderId++;
+            cart = {};
+            hideConfirmModal();
+            showPaymentModal();
+            updateUI();
+            updateOrdersUI();
+        }
+
+        function handlePayment(orderId) {
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].paid = true;
+            }
+            hidePaymentModal();
+            updateOrdersUI();
+        }
+
+        function completeOrder(orderId) {
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            if (orderIndex !== -1 && orders[orderIndex].paid) {
+                const completedOrder = orders[orderIndex];
+                completedOrder.status = 'completed';
+                completedOrders.push(completedOrder);
+                orders.splice(orderIndex, 1);
+                dailyTotal += completedOrder.total;
+                document.getElementById('daily-total').textContent = dailyTotal;
+                updateOrdersUI();
+            }
+        }
+
+        function updateOrdersUI() {
+            // Update pending orders
+            const pendingOrdersContainer = document.getElementById('pending-orders');
+            pendingOrdersContainer.innerHTML = orders.map(order => `
+                <div class="pending-order">
+                    <div class="order-header">
+                        <span class="font-medium">Order #${order.id}</span>
+                        <div class="order-actions">
+                            ${!order.paid ? `
+                                <button class="action-btn payment-btn" onclick="handlePayment(${order.id})">
+                                    <i data-lucide="dollar-sign"></i>
+                                </button>
+                            ` : `
+                                <button class="action-btn complete-btn" onclick="completeOrder(${order.id})">
+                                    <i data-lucide="check"></i>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                    <div class="order-details">
+                        ${Object.entries(order.items).map(([name, item]) => `
+                            <div>${name} x${item.quantity}</div>
+                        `).join('')}
+                        <div class="mt-1">Total: ₹${order.total}</div>
+                        <div class="payment-status ${order.paid ? 'status-paid' : 'status-pending'}">
+                            ${order.paid ? 'Payment Received' : 'Payment Pending'}
+                        </div>
+                    </div>
+                </div>
+            `).join('') || '<div class="text-gray-500 text-center">No pending orders</div>';
+
+            // Update completed orders
+            const completedOrdersContainer = document.getElementById('completed-orders');
+            completedOrdersContainer.innerHTML = completedOrders.map(order => `
+                <div class="completed-order">
+                    Order #${order.id} - ₹${order.total}
+                </div>
+            `).join('') || '<div class="text-gray-500 text-center">No completed orders</div>';
+
+            // Refresh Lucide icons
+            lucide.createIcons();
+        }
+
+        // Initialize UI
+        function initializeUI() {
+            // Set current date
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-IN', options);
+
+            // Initialize category tabs
+            const categoryTabsContainer = document.getElementById('category-tabs');
+            categoryTabsContainer.innerHTML = Object.keys(menuCategories)
+                .map(category => `
+                    <button class="category-tab ${category === activeCategory ? 'active' : ''}"
+                            onclick="changeCategory('${category}')">
+                        ${category}
+                    </button>
+                `).join('');
+
+            // Initialize menu items for active category
+            updateMenuItems();
+
+            // Add event listeners
+            document.getElementById('place-order-btn').addEventListener('click', showConfirmModal);
+            document.getElementById('cancel-order').addEventListener('click', hideConfirmModal);
+            document.getElementById('confirm-order').addEventListener('click', confirmOrder);
+            document.getElementById('payment-received').addEventListener('click', () => handlePayment(currentOrderId - 1));
+            document.getElementById('payment-pending').addEventListener('click', hidePaymentModal);
+        }
+
+        function changeCategory(category) {
+            activeCategory = category;
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.textContent.trim() === category);
+            });
+            updateMenuItems();
+        }
+
+        function updateMenuItems() {
+            const menuItemsContainer = document.getElementById('menu-items');
+            menuItemsContainer.innerHTML = menuCategories[activeCategory]
+                .map(item => `
+                    <div class="menu-item">
+                        <div>
+                            <div class="item-name font-medium">${item.name}</div>
+                            <div class="item-price">₹${item.price}</div>
+                        </div>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="updateQuantity(${JSON.stringify(item)}, -1)">-</button>
+                            <span class="quantity-display">${cart[item.name]?.quantity || 0}</span>
+                            <button class="quantity-btn plus" onclick="updateQuantity(${JSON.stringify(item)}, 1)">+</button>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', initializeUI);
