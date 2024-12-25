@@ -12,6 +12,10 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
+            document.getElementById('payment-received').addEventListener('click', () => {
+                const orderId = orders.find(order => !order.paid).id;
+                handlePayment(orderId);
+            });
         }
 
         body {
