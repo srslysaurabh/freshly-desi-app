@@ -4,45 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freshly Desi POS</title>
-    <!-- Include Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
-        .min-h-screen {
-            min-height: 100vh;
-            background-color: rgb(243 244 246);
+        body {
+            background-color: #f3f4f6;
         }
 
         .header {
-            background-color: rgb(185 28 28);
+            background-color: #dc2626;
             color: white;
             padding: 1rem;
         }
 
         .header h1 {
             font-size: 2.25rem;
-            font-weight: bold;
-            color: rgb(250 204 21);
-        }
-
-        .header p {
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
-
-        .header-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1rem;
-            background-color: rgb(153 27 27);
-            padding: 0.5rem;
-            border-radius: 0.25rem;
+            font-weight: 700;
+            color: #fbbf24;
         }
 
         .container {
@@ -51,104 +36,104 @@
             padding: 1rem;
         }
 
-        .grid-layout {
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            background-color: rgba(0,0,0,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+        }
+
+        .main-content {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1rem;
+            margin-top: 1rem;
         }
 
         @media (min-width: 1024px) {
-            .grid-layout {
+            .main-content {
                 grid-template-columns: 2fr 1fr;
             }
         }
 
         .menu-section {
-            background-color: white;
+            background: white;
             border-radius: 0.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .category-tabs {
+        .tabs {
             display: flex;
             overflow-x: auto;
-            padding: 0.5rem;
-            background-color: rgb(249 250 251);
+            padding: 0.75rem;
+            background: #f9fafb;
             border-top-left-radius: 0.5rem;
             border-top-right-radius: 0.5rem;
+            gap: 0.5rem;
         }
 
-        .category-tab {
+        .tab {
             padding: 0.5rem 1rem;
-            white-space: nowrap;
-            border-radius: 0.25rem;
             border: none;
             background: none;
             cursor: pointer;
+            white-space: nowrap;
+            border-radius: 0.375rem;
         }
 
-        .category-tab.active {
-            background-color: rgb(185 28 28);
+        .tab.active {
+            background-color: #dc2626;
             color: white;
-        }
-
-        .category-tab:hover:not(.active) {
-            background-color: rgb(229 231 235);
         }
 
         .menu-items {
             padding: 1rem;
-            display: grid;
-            gap: 0.5rem;
         }
 
         .menu-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid #f3f4f6;
         }
 
-        .menu-item:hover {
-            background-color: rgb(249 250 251);
+        .item-info h3 {
+            font-weight: 500;
         }
 
-        .item-price {
+        .item-info p {
+            color: #6b7280;
             font-size: 0.875rem;
-            color: rgb(75 85 99);
         }
 
-        .quantity-control {
+        .quantity-controls {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
 
-        .quantity-btn {
+        .qty-btn {
             width: 2rem;
             height: 2rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: none;
-            border-radius: 0.25rem;
-            cursor: pointer;
         }
 
-        .quantity-btn.minus {
-            background-color: rgb(254 226 226);
-            color: rgb(185 28 28);
+        .qty-btn.minus {
+            background-color: #fee2e2;
+            color: #dc2626;
         }
 
-        .quantity-btn.plus {
-            background-color: rgb(185 28 28);
+        .qty-btn.plus {
+            background-color: #dc2626;
             color: white;
-        }
-
-        .quantity-display {
-            width: 2rem;
-            text-align: center;
         }
 
         .orders-section {
@@ -158,41 +143,42 @@
         }
 
         .order-card {
-            background-color: white;
+            background: white;
             padding: 1rem;
             border-radius: 0.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .card-title {
-            font-size: 1.125rem;
-            font-weight: bold;
+        .order-card h2 {
+            font-size: 1.25rem;
             margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
         }
 
         .cart-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.25rem 0;
+            padding: 0.5rem 0;
         }
 
         .cart-total {
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 1px solid rgb(229 231 235);
+            border-top: 1px solid #f3f4f6;
             display: flex;
             justify-content: space-between;
-            font-weight: bold;
+            font-weight: 600;
         }
 
         .place-order-btn {
             width: 100%;
+            padding: 0.75rem;
             margin-top: 1rem;
-            padding: 0.5rem;
-            background-color: rgb(185 28 28);
+            background-color: #dc2626;
             color: white;
             border: none;
-            border-radius: 0.25rem;
+            border-radius: 0.375rem;
             cursor: pointer;
         }
 
@@ -201,9 +187,41 @@
             cursor: not-allowed;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 28rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+        }
+
         .pending-order {
-            border-bottom: 1px solid rgb(229 231 235);
-            padding: 0.5rem 0;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
         }
 
         .pending-order:last-child {
@@ -214,192 +232,92 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .order-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .action-btn {
-            padding: 0.25rem;
-            border: none;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .payment-btn {
-            background-color: rgb(220 252 231);
-            color: rgb(22 163 74);
-        }
-
-        .complete-btn {
-            background-color: rgb(219 234 254);
-            color: rgb(29 78 216);
-        }
-
-        .order-details {
-            font-size: 0.875rem;
-            color: rgb(75 85 99);
-            margin-top: 0.25rem;
-        }
-
-        .payment-status {
-            font-size: 0.75rem;
-            margin-top: 0.25rem;
-        }
-
-        .status-paid {
-            color: rgb(22 163 74);
-        }
-
-        .status-pending {
-            color: rgb(185 28 28);
+            margin-bottom: 0.5rem;
         }
 
         .completed-order {
-            font-size: 0.875rem;
-            color: rgb(75 85 99);
+            padding: 0.5rem 0;
+            color: #6b7280;
         }
 
-        .modal {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
+        .btn-confirm { background-color: #dc2626; color: white; }
+        .btn-cancel { background-color: #f3f4f6; }
+        .btn-payment-received { background-color: #059669; color: white; }
+        .btn-payment-pending { background-color: #d97706; color: white; }
 
-        .modal-content {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            max-width: 28rem;
-            width: 100%;
-        }
-
-        .modal-title {
-            font-size: 1.125rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 0.25rem;
-            cursor: pointer;
-        }
-
-        .btn-cancel {
-            background-color: rgb(229 231 235);
-        }
-
-        .btn-confirm {
-            background-color: rgb(185 28 28);
-            color: white;
-        }
-
-        .btn-payment-received {
-            background-color: rgb(22 163 74);
-            color: white;
-        }
-
-        .btn-payment-pending {
-            background-color: rgb(202 138 4);
-            color: white;
-        }
+        .status-paid { color: #059669; }
+        .status-pending { color: #dc2626; }
     </style>
 </head>
 <body>
-    <div class="min-h-screen">
-        <header class="header">
-            <div class="container">
-                <h1>Freshly Desi</h1>
-                <p>Fresh • Local • Delicious</p>
-                <div class="header-info">
-                    <div id="current-date"></div>
-                    <div>Daily Total: ₹<span id="daily-total">0</span></div>
-                </div>
-            </div>
-        </header>
-
+    <header class="header">
         <div class="container">
-            <div class="grid-layout">
-                <div class="menu-section">
-                    <div class="category-tabs" id="category-tabs"></div>
-                    <div class="menu-items" id="menu-items"></div>
-                </div>
-
-                <div class="orders-section">
-                    <div class="order-card">
-                        <h2 class="card-title">Current Order</h2>
-                        <div id="current-cart"></div>
-                        <div class="cart-total">
-                            <span>Total</span>
-                            <span>₹<span id="cart-total">0</span></span>
-                        </div>
-                        <button class="place-order-btn" id="place-order-btn" disabled>
-                            Place Order
-                        </button>
-                    </div>
-
-                    <div class="order-card">
-                        <h2 class="card-title">Pending Orders</h2>
-                        <div id="pending-orders"></div>
-                    </div>
-
-                    <div class="order-card">
-                        <h2 class="card-title">Completed Orders</h2>
-                        <div id="completed-orders"></div>
-                    </div>
-                </div>
+            <h1>Freshly Desi</h1>
+            <p>Fresh • Local • Delicious</p>
+            <div class="header-info">
+                <div id="current-date"></div>
+                <div>Daily Total: ₹<span id="daily-total">0</span></div>
             </div>
         </div>
+    </header>
 
-        <!-- Confirmation Modal -->
-        <div id="confirm-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <h3 class="modal-title">Confirm Order</h3>
-                <div id="confirm-order-details"></div>
-                <div class="modal-actions">
-                    <button class="modal-btn btn-cancel" id="cancel-order">Cancel</button>
-                    <button class="modal-btn btn-confirm" id="confirm-order">Confirm</button>
-                </div>
+    <div class="container">
+        <div class="main-content">
+            <div class="menu-section">
+                <div class="tabs" id="category-tabs"></div>
+                <div class="menu-items" id="menu-items"></div>
             </div>
-        </div>
 
-        <!-- Payment Modal -->
-        <div id="payment-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <h3 class="modal-title">Payment Status</h3>
-                <p>Total Amount: ₹<span id="payment-amount">0</span></p>
-                <div class="modal-actions">
-                    <button class="modal-btn btn-payment-received" id="payment-received">
-                        Payment Received
-                    </button>
-                    <button class="modal-btn btn-payment-pending" id="payment-pending">
-                        Payment Pending
-                    </button>
+            <div class="orders-section">
+                <div class="order-card">
+                    <h2>Current Order</h2>
+                    <div id="current-cart"></div>
+                    <div class="cart-total">
+                        <span>Total</span>
+                        <span>₹<span id="cart-total">0</span></span>
+                    </div>
+                    <button class="place-order-btn" id="place-order-btn" disabled>Place Order</button>
+                </div>
+
+                <div class="order-card">
+                    <h2>Pending Orders</h2>
+                    <div id="pending-orders"></div>
+                </div>
+
+                <div class="order-card">
+                    <h2>Completed Orders</h2>
+                    <div id="completed-orders"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm Order</h2>
+            <div id="confirm-order-details"></div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" id="cancel-order">Cancel</button>
+                <button class="modal-btn btn-confirm" id="confirm-order">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <h2>Payment Status</h2>
+            <p class="mb-4">Total Amount: ₹<span id="payment-amount">0</span></p>
+            <div class="modal-actions">
+                <button class="modal-btn btn-payment-received" id="payment-received">Payment Received</button>
+                <button class="modal-btn btn-payment-pending" id="payment-pending">Payment Pending</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Menu categories data
+        // Menu Data
         const menuCategories = {
             'Quick Bites': [
                 { name: 'Veg Spring Rolls', price: 95 },
@@ -442,7 +360,7 @@
             ],
         };
 
-        // State management
+        // State
         let currentOrderId = 1;
         let activeCategory = 'Quick Bites';
         let cart = {};
@@ -450,10 +368,7 @@
         let completedOrders = [];
         let dailyTotal = 0;
 
-        // Initialize Lucide icons
-        lucide.createIcons();
-
-        // Helper functions
+        // Utility Functions
         function calculateTotal(items) {
             return Object.values(items).reduce((total, item) => {
                 return total + (item.quantity * item.price);
@@ -461,20 +376,19 @@
         }
 
         function updateQuantity(item, change) {
-            const newCart = { ...cart };
-            if (!newCart[item.name]) {
-                newCart[item.name] = { ...item, quantity: 0 };
+            if (!cart[item.name]) {
+                cart[item.name] = { ...item, quantity: 0 };
             }
-            newCart[item.name].quantity = Math.max(0, newCart[item.name].quantity + change);
-            if (newCart[item.name].quantity === 0) {
-                delete newCart[item.name];
+            cart[item.name].quantity = Math.max(0, cart[item.name].quantity + change);
+            if (cart[item.name].quantity === 0) {
+                delete cart[item.name];
             }
-            cart = newCart;
             updateUI();
         }
 
+        // UI Update Functions
         function updateUI() {
-            // Update cart display
+            // Update cart
             const cartContainer = document.getElementById('current-cart');
             cartContainer.innerHTML = Object.entries(cart)
                 .map(([name, item]) => `
@@ -484,39 +398,91 @@
                     </div>
                 `).join('');
 
-            // Update cart total
-            const total = calculateTotal(cart);
-            document.getElementById('cart-total').textContent = total;
+            // Update total
+            document.getElementById('cart-total').textContent = calculateTotal(cart);
 
-            // Update place order button state
+            // Update place order button
             document.getElementById('place-order-btn').disabled = Object.keys(cart).length === 0;
 
-            // Update menu item quantities
-            document.querySelectorAll('.menu-item').forEach(menuItem => {
-                const itemName = menuItem.querySelector('.item-name').textContent;
-                const quantityDisplay = menuItem.querySelector('.quantity-display');
-                quantityDisplay.textContent = cart[itemName]?.quantity || 0;
-            });
+            // Update menu quantities
+            updateMenuItems();
         }
 
+        function updateMenuItems() {
+            const menuItemsContainer = document.getElementById('menu-items');
+            menuItemsContainer.innerHTML = menuCategories[activeCategory]
+                .map(item => `
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h3>${item.name}</h3>
+                            <p>₹${item.price}</p>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn minus" onclick='updateQuantity(${JSON.stringify(item)}, -1)'>-</button>
+                            <span>${cart[item.name]?.quantity || 0}</span>
+                            <button class="qty-btn plus" onclick='updateQuantity(${JSON.stringify(item)}, 1)'>+</button>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function updateOrdersUI() {
+            // Update pending orders
+            const pendingOrdersContainer = document.getElementById('pending-orders');
+            pendingOrdersContainer.innerHTML = orders.length ? orders.map(order => `
+                <div class="pending-order">
+                    <div class="order-header">
+                        <span>Order #${order.id}</span>
+                        <div>
+                            ${!order.paid ? 
+                                `<button class="modal-btn btn-payment-received" onclick="handlePayment(${order.id})">
+                                    Receive Payment
+                                </button>` :
+                                `<button class="modal-btn btn-payment-received" onclick="completeOrder(${order.id})">
+                                    Complete Order
+                                </button>`
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        ${Object.entries(order.items).map(([name, item]) => `
+                            <div>${name} x${item.quantity}</div>
+                        `).join('')}
+                        <div>Total: ₹${order.total}</div>
+                        <div class="${order.paid ? 'status-paid' : 'status-pending'}">
+                            ${order.paid ? 'Payment Received' : 'Payment Pending'}
+                        </div>
+                    </div>
+                </div>
+            `).join('') : '<div class="completed-order">No pending orders</div>';
+
+            // Update completed orders
+            const completedOrdersContainer = document.getElementById('completed-orders');
+            completedOrdersContainer.innerHTML = completedOrders.length ? completedOrders.map(order => `
+                <div class="completed-order">
+                    Order #${order.id} - ₹${order.total}
+                </div>
+            `).join('') : '<div class="completed-order">No completed orders</div>';
+
+            // Update daily total
+            document.getElementById('daily-total').textContent = dailyTotal;
+        }
+
+        // Modal Functions
         function showConfirmModal() {
             const modal = document.getElementById('confirm-modal');
             const detailsContainer = document.getElementById('confirm-order-details');
             
             detailsContainer.innerHTML = `
-                <div class="space-y-2">
-                    ${Object.entries(cart).map(([name, item]) => `
-                        <div class="flex justify-between">
-                            <span>${name} x${item.quantity}</span>
-                            <span>₹${item.price * item.quantity}</span>
-                        </div>
-                    `).join('')}
-                    <div class="pt-2 border-t mt-2">
-                        <div class="flex justify-between font-bold">
-                            <span>Total</span>
-                            <span>₹${calculateTotal(cart)}</span>
-                        </div>
+                ${Object.entries(cart).map(([name, item]) => `
+                    <div class="cart-item">
+                        <span>${name} x${item.quantity}</span>
+                        <span>₹${item.price * item.quantity}</span>
                     </div>
+                `).join('')}
+                <div class="cart-total">
+                    <span>Total</span>
+                    <span>₹${calculateTotal(cart)}</span>
                 </div>
             `;
             
@@ -527,9 +493,9 @@
             document.getElementById('confirm-modal').style.display = 'none';
         }
 
-        function showPaymentModal() {
+        function showPaymentModal(total) {
             const modal = document.getElementById('payment-modal');
-            document.getElementById('payment-amount').textContent = calculateTotal(cart);
+            document.getElementById('payment-amount').textContent = total;
             modal.style.display = 'flex';
         }
 
@@ -537,21 +503,25 @@
             document.getElementById('payment-modal').style.display = 'none';
         }
 
+        // Order Management Functions
+        function placeOrder() {
+            if (Object.keys(cart).length === 0) return;
+            showConfirmModal();
+        }
+
         function confirmOrder() {
+            const total = calculateTotal(cart);
             const newOrder = {
-                id: currentOrderId,
+                id: currentOrderId++,
                 items: { ...cart },
-                total: calculateTotal(cart),
+                total,
                 timestamp: new Date(),
-                status: 'pending',
                 paid: false
             };
-            
             orders.push(newOrder);
-            currentOrderId++;
             cart = {};
             hideConfirmModal();
-            showPaymentModal();
+            showPaymentModal(total);
             updateUI();
             updateOrdersUI();
         }
@@ -560,120 +530,59 @@
             const orderIndex = orders.findIndex(o => o.id === orderId);
             if (orderIndex !== -1) {
                 orders[orderIndex].paid = true;
+                hidePaymentModal();
+                updateOrdersUI();
             }
-            hidePaymentModal();
-            updateOrdersUI();
         }
 
         function completeOrder(orderId) {
             const orderIndex = orders.findIndex(o => o.id === orderId);
             if (orderIndex !== -1 && orders[orderIndex].paid) {
                 const completedOrder = orders[orderIndex];
-                completedOrder.status = 'completed';
-                completedOrders.push(completedOrder);
                 orders.splice(orderIndex, 1);
+                completedOrders.push(completedOrder);
                 dailyTotal += completedOrder.total;
-                document.getElementById('daily-total').textContent = dailyTotal;
                 updateOrdersUI();
             }
         }
 
-        function updateOrdersUI() {
-            // Update pending orders
-            const pendingOrdersContainer = document.getElementById('pending-orders');
-            pendingOrdersContainer.innerHTML = orders.map(order => `
-                <div class="pending-order">
-                    <div class="order-header">
-                        <span class="font-medium">Order #${order.id}</span>
-                        <div class="order-actions">
-                            ${!order.paid ? `
-                                <button class="action-btn payment-btn" onclick="handlePayment(${order.id})">
-                                    <i data-lucide="dollar-sign"></i>
-                                </button>
-                            ` : `
-                                <button class="action-btn complete-btn" onclick="completeOrder(${order.id})">
-                                    <i data-lucide="check"></i>
-                                </button>
-                            `}
-                        </div>
-                    </div>
-                    <div class="order-details">
-                        ${Object.entries(order.items).map(([name, item]) => `
-                            <div>${name} x${item.quantity}</div>
-                        `).join('')}
-                        <div class="mt-1">Total: ₹${order.total}</div>
-                        <div class="payment-status ${order.paid ? 'status-paid' : 'status-pending'}">
-                            ${order.paid ? 'Payment Received' : 'Payment Pending'}
-                        </div>
-                    </div>
-                </div>
-            `).join('') || '<div class="text-gray-500 text-center">No pending orders</div>';
-
-            // Update completed orders
-            const completedOrdersContainer = document.getElementById('completed-orders');
-            completedOrdersContainer.innerHTML = completedOrders.map(order => `
-                <div class="completed-order">
-                    Order #${order.id} - ₹${order.total}
-                </div>
-            `).join('') || '<div class="text-gray-500 text-center">No completed orders</div>';
-
-            // Refresh Lucide icons
-            lucide.createIcons();
+        // Category Management
+        function changeCategory(category) {
+            activeCategory = category;
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.toggle('active', tab.textContent === category);
+            });
+            updateMenuItems();
         }
 
-        // Initialize UI
-        function initializeUI() {
+        // Initialize
+        function initialize() {
             // Set current date
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-IN', options);
 
-            // Initialize category tabs
-            const categoryTabsContainer = document.getElementById('category-tabs');
-            categoryTabsContainer.innerHTML = Object.keys(menuCategories)
+            // Create category tabs
+            const tabsContainer = document.getElementById('category-tabs');
+            tabsContainer.innerHTML = Object.keys(menuCategories)
                 .map(category => `
-                    <button class="category-tab ${category === activeCategory ? 'active' : ''}"
-                            onclick="changeCategory('${category}')">
-                        ${category}
-                    </button>
+                    <button class="tab ${category === activeCategory ? 'active' : ''}"
+                            onclick="changeCategory('${category}')">${category}</button>
                 `).join('');
 
-            // Initialize menu items for active category
+            // Initialize menu items
             updateMenuItems();
 
             // Add event listeners
-            document.getElementById('place-order-btn').addEventListener('click', showConfirmModal);
+            document.getElementById('place-order-btn').addEventListener('click', placeOrder);
             document.getElementById('cancel-order').addEventListener('click', hideConfirmModal);
             document.getElementById('confirm-order').addEventListener('click', confirmOrder);
-            document.getElementById('payment-received').addEventListener('click', () => handlePayment(currentOrderId - 1));
             document.getElementById('payment-pending').addEventListener('click', hidePaymentModal);
         }
 
-        function changeCategory(category) {
-            activeCategory = category;
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.textContent.trim() === category);
-            });
-            updateMenuItems();
-        }
-
-        function updateMenuItems() {
-            const menuItemsContainer = document.getElementById('menu-items');
-            menuItemsContainer.innerHTML = menuCategories[activeCategory]
-                .map(item => `
-                    <div class="menu-item">
-                        <div>
-                            <div class="item-name font-medium">${item.name}</div>
-                            <div class="item-price">₹${item.price}</div>
-                        </div>
-                        <div class="quantity-control">
-                            <button class="quantity-btn minus" onclick="updateQuantity(${JSON.stringify(item)}, -1)">-</button>
-                            <span class="quantity-display">${cart[item.name]?.quantity || 0}</span>
-                            <button class="quantity-btn plus" onclick="updateQuantity(${JSON.stringify(item)}, 1)">+</button>
-                        </div>
-                    </div>
-                `).join('');
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', initializeUI);
+        // Start the application
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
