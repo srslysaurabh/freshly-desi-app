@@ -12,10 +12,6 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
-            document.getElementById('payment-received').addEventListener('click', () => {
-                const orderId = orders.find(order => !order.paid).id;
-                handlePayment(orderId);
-            });
         }
 
         body {
@@ -536,6 +532,8 @@
                 orders[orderIndex].paid = true;
                 hidePaymentModal();
                 updateOrdersUI();
+                // Show success message or feedback
+                alert('Payment received successfully!');
             }
         }
 
@@ -582,6 +580,9 @@
             document.getElementById('place-order-btn').addEventListener('click', placeOrder);
             document.getElementById('cancel-order').addEventListener('click', hideConfirmModal);
             document.getElementById('confirm-order').addEventListener('click', confirmOrder);
+            document.getElementById('payment-received').addEventListener('click', () => {
+                handlePayment(currentOrderId - 1);
+            });
             document.getElementById('payment-pending').addEventListener('click', hidePaymentModal);
         }
 
